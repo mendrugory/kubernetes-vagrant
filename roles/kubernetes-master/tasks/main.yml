@@ -1,0 +1,46 @@
+---
+# tasks file for docker
+
+
+- name: Initializing K8s masters
+  command: "kubeadm init --pod-network-cidr={{ cidr }} --apiserver-advertise-address={{ ip }}"
+
+- name: Clean .kube
+  file:
+    state: absent
+    path: /home/{{user}}/.kube
+
+- name: Create a .kube if it does not exist
+  file:
+    path: /home/{{user}}/.kube
+    state: directory
+    mode: '0755'
+
+- name: Create kubeconfig
+  shell: "cp /etc/kubernetes/admin.conf /home/{{user}}/.kube/config && chown {{user}}:{{user}} /home/{{user}}/.kube/config"
+
+- name: Network Plugin
+  command: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml --kubeconfig /home/{{user}}/.kube/config"
+
+
+- name: Kubernetes Join command  
+  shell: "kubeadm token create --print-join-command"
+  register: kube_join_command
+
+- name: Print Kubernetes Join command
+  debug:
+    var: kube_join_command.stdout_lines
+
+- name: Kubernetes Config  
+  shell: "cat /etc/kubernetes/admin.conf"
+  register: kube_config
+
+- name: Print Kubernetes Config
+  debug:
+    var: kube_config.stdout_lines 
+
+- name: "Add K8S information"
+  add_host:
+    name:   "{{ k8s_middle_server }}"
+    kube_join_command:  "{{ kube_join_command.stdout }}"
+    kube_config:   "{{ kube_config.stdout }}"    

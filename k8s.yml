@@ -1,0 +1,41 @@
+---
+# Kubernetes Cluster
+
+- name: Common Parts
+  hosts: all
+  become: yes
+  roles:
+    - role: docker
+      version: 18.06.1~ce~3-0~ubuntu
+    - role: kubernetes-common
+      version: 1.13.5-00
+
+- name: Master
+  hosts: masters
+  become: yes
+  roles:
+  - role: kubernetes-master
+    version: 1.13.5-00
+    cidr: 10.244.0.0/16
+    ip: "{{ hostvars['master1']['ansible_host'] }}" 
+    user: "{{ hostvars['master1']['ansible_user'] }}" 
+    k8s_middle_server: k8s_middle_server
+
+- name: Workers
+  gather_facts: yes
+  hosts: workers
+  become: yes
+  roles:
+  - role: kubernetes-worker
+    version: 1.13.5-00
+    k8s_middle_server: k8s_middle_server
+    ip: "{{ ansible_host }}"
+
+# - name: Local
+#   gather_facts: yes
+#   hosts: 127.0.0.1
+#   connection: local
+#   roles:
+#   - role: local
+#     user: gonzalo
+#     k8s_middle_server: k8s_middle_server    

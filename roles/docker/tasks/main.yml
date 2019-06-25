@@ -1,0 +1,25 @@
+---
+# tasks file for docker
+
+
+- name: Installing prerequisites
+  apt: name={{item}} update_cache=yes
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+
+- name: Ensuring curl is present
+  package: name=curl state=present
+
+- name: Adding Docker apt key
+  shell: "curl -sSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
+  args:
+    warn: false
+
+- name: Adding Docker APT repository
+  apt_repository: repo='deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable'
+
+- name: Installing Docker
+  apt: name=docker-ce={{version}} update_cache=yes force=yes

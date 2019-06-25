@@ -1,0 +1,32 @@
+---
+# tasks file for docker
+
+
+- name: Installing prerequisites
+  apt: name={{item}} update_cache=yes
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+
+- name: Ensuring curl is present
+  package: name=curl state=present
+
+- name: Adding Kubernetes apt key
+  shell: "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -"
+  args:
+    warn: false
+
+- name: Adding Kubernetes APT repository
+  apt_repository: repo='deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main'
+
+- name: Installing Kubernetes
+  apt: name={{item}} update_cache=yes
+  with_items:
+    - kubectl={{ version }}
+    - kubeadm={{ version }}
+    - kubelet={{ version }}
+
+- name: Disable swap memory
+  shell: "swapoff -a"    
