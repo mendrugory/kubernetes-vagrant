@@ -14,3 +14,8 @@ sudo iptables -t nat -A POSTROUTING -j MASQUERADE
 
 
 borrar -> sudo iptables -t nat -D PREROUTING 1
+
+
+```
+$ ansible-playbook lb.yml --extra-vars "server1=192.168.33.21 server2=192.168.33.22 app_port=32038 interface=enp0s9"
+```

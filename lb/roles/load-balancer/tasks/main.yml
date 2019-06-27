@@ -1,0 +1,25 @@
+- name: "Forwarding IPv4 packets"
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+
+- name: IPTables rule server1
+  shell: "iptables -t nat -A PREROUTING -i {{ interface }} -p tcp --dport 80 -m state --state NEW -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination {{ server1 }}:{{ app_port }}"
+
+
+- name: IPTables rule server2
+  iptables: 
+    table: nat
+    chain: PREROUTING
+    in_interface: "{{ interface }}"
+    protocol: tcp
+    destination_port: 80
+    to_destination: "{{ server2 }}:{{ app_port }}"
+    jump: DNAT
+
+- name: IPTables rule
+  iptables: 
+    table: nat
+    chain: POSTROUTING
+    jump: MASQUERADE

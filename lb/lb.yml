@@ -1,11 +1,11 @@
-- name: Ingress
-  hosts: ingress
+- name: Load Balancer
+  hosts: lb
   become: yes
   roles:
-  - role: nginx-ingress
+  - name: load-balancer
 
 - name: Get IPs
-  hosts: ingress
+  hosts: lb
   tasks:
   - name: Getting IP
     shell: "hostname -I | awk '{print $3}'"
