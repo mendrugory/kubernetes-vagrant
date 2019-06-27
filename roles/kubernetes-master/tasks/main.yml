@@ -3,7 +3,7 @@
 
 
 - name: Initializing K8s masters
-  command: "kubeadm init --pod-network-cidr={{ cidr }} --apiserver-advertise-address={{ ip }}"
+  command: "kubeadm init --pod-network-cidr={{ cidr }} --apiserver-advertise-address={{ ip }}" 
 
 - name: Clean .kube
   file:
@@ -20,7 +20,7 @@
   shell: "cp /etc/kubernetes/admin.conf /home/{{user}}/.kube/config && chown {{user}}:{{user}} /home/{{user}}/.kube/config"
 
 - name: Network Plugin
-  command: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml --kubeconfig /home/{{user}}/.kube/config"
+  command: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml --kubeconfig /home/{{user}}/.kube/config"
 
 
 - name: Kubernetes Join command  

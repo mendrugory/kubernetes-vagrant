@@ -9,6 +9,7 @@
       version: 18.06.1~ce~3-0~ubuntu
     - role: kubernetes-common
       version: 1.13.5-00
+      ip: "{{ ansible_host }}"
 
 - name: Master
   hosts: masters
@@ -29,7 +30,6 @@
   - role: kubernetes-worker
     version: 1.13.5-00
     k8s_middle_server: k8s_middle_server
-    ip: "{{ ansible_host }}"
 
 # - name: Local
 #   gather_facts: yes

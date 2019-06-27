@@ -1,0 +1,5 @@
+- name: Ingress
+  hosts: ingress
+  become: yes
+  roles:
+  - role: nginx-ingress

@@ -1,0 +1,33 @@
+upstream app1 {
+    server {{ server1 }}:{{ app1_port }};
+    server {{ server2 }}:{{ app1_port }};
+}
+
+upstream app2 {
+    server {{ server1 }}:{{ app2_port }};
+    server {{ server2 }}:{{ app2_port }};
+}
+
+server {
+    listen 80;
+
+    location /app1 {
+        proxy_pass http://app1;      
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        rewrite ^/app1(.*)$ $1 break;
+    }
+
+    location /app2 {
+        proxy_pass http://app2;      
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        rewrite ^/app2(.*)$ $1 break;
+    }    
+}    

@@ -1,0 +1,18 @@
+- name: Installing Nginx
+  apt: name=nginx update_cache=yes
+
+- name: Copying welcome page
+  copy: src=index.nginx-debian.html  dest=/var/www/html/index.nginx-debian.html 
+
+- name: Copying Nginx configuration
+  template: src=ingress.conf.j2 dest=/etc/nginx/sites-available/default
+  notify: reload_nginx
+
+- name: Create symlink
+  file: 
+    src: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+  
+
+

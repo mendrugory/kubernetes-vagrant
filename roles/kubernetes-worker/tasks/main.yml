@@ -7,12 +7,8 @@
     name: net.bridge.bridge-nf-call-iptables
     value: 1
     state: present
-    sysctl_set: yes
     reload: yes
 
-- name: Copying kubeadm.conf
-  template: src=10-kubeadm.conf.j2 dest=/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-  notify: Restart Kubelet
 
 - name: Join Kubernetes cluster
   shell: "{{ hostvars['k8s_middle_server']['kube_join_command'] }}"
