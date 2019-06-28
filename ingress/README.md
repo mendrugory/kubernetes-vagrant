@@ -10,7 +10,7 @@ We are going to try to expose two applications (nginx web server and apache web 
 
 The virtual machine will receive a public IP which will be accessible by other computers in the same network.
 
-## Start up the Load Balancer
+## Start up the Ingress
 
 ### Start up the virtual machine
 
@@ -29,7 +29,7 @@ $ ansible-playbook ingress.yml --extra-vars "server1=192.168.33.21 server2=192.1
 
 > Check the given Public IP.
 
-### Visit the application through the Load Balancer
+### Visit the applications through the Ingress
 
 ```
 $ curl 192.168.1.144/app1/

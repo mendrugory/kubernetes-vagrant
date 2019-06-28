@@ -115,5 +115,5 @@ $ curl 192.168.33.21:30275
 
 The servers only have private IPs, therefore it would not be possible to access to the applications from other computers. Let's solve it !!
 
-[Load Balancer](https://github.com/mendrugory/kubernetes-vagrant/tree/master/lb)
-[Ingress](https://github.com/mendrugory/kubernetes-vagrant/tree/master/ingress)
+* [Load Balancer](https://github.com/mendrugory/kubernetes-vagrant/tree/master/lb)
+* [Ingress](https://github.com/mendrugory/kubernetes-vagrant/tree/master/ingress)
