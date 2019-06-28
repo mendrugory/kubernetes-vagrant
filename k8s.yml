@@ -29,13 +29,11 @@
   roles:
   - role: kubernetes-worker
     version: 1.13.5-00
-    k8s_middle_server: k8s_middle_server
+    k8s_middle_server: k8s_middle_server 
 
-# - name: Local
-#   gather_facts: yes
-#   hosts: 127.0.0.1
-#   connection: local
-#   roles:
-#   - role: local
-#     user: gonzalo
-#     k8s_middle_server: k8s_middle_server    
+- name: Local
+  hosts: 127.0.0.1
+  connection: local
+  tasks:
+  - name: Getting Kubernetes configuration
+    local_action: copy content={{ hostvars['k8s_middle_server']['kube_config'] }} dest=mykubeconfig   
