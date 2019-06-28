@@ -38,9 +38,9 @@ Example:
 ```
 $ kubectl get nodes -o wide --kubeconfig mykubeconfig
 NAME   STATUS   ROLES    AGE     VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
-k8s1   Ready    master   1m     v1.13.5   192.168.33.11   <none>        Ubuntu 16.04.6 LTS   4.4.0-151-generic   docker://18.6.1
-k8s2   Ready    <none>   57s   v1.13.5   192.168.33.21   <none>        Ubuntu 16.04.6 LTS   4.4.0-151-generic   docker://18.6.1
-k8s3   Ready    <none>   57s   v1.13.5   192.168.33.22   <none>        Ubuntu 16.04.6 LTS   4.4.0-151-generic   docker://18.6.1
+k8s1   Ready    master   1m      v1.13.5   192.168.33.11   <none>        Ubuntu 16.04.6 LTS   4.4.0-151-generic   docker://18.6.1
+k8s2   Ready    <none>   57s     v1.13.5   192.168.33.21   <none>        Ubuntu 16.04.6 LTS   4.4.0-151-generic   docker://18.6.1
+k8s3   Ready    <none>   57s     v1.13.5   192.168.33.22   <none>        Ubuntu 16.04.6 LTS   4.4.0-151-generic   docker://18.6.1
 ``` 
 
 
@@ -109,3 +109,11 @@ Commercial support is available at
 $ curl 192.168.33.21:30275
 <html><body><h1>It works!</h1></body></html>
 ```
+
+
+## Exposing Applications
+
+The servers only have private IPs, therefore it would not be possible to access to the applications from other computers. Let's solve it !!
+
+[Load Balancer](https://github.com/mendrugory/kubernetes-vagrant/tree/master/lb)
+[Ingress](https://github.com/mendrugory/kubernetes-vagrant/tree/master/ingress)

@@ -1,21 +1,56 @@
-sudo iptables -t nat -v -L PREROUTING -n --line-number
+# Load Balancer
 
-sudo sysctl net.ipv4.ip_forward=1
+When you run a Kubernetes cluster offered by a Cloud provider and you whish to expose your services using a Load Balancer Service, a load balancer which belongs to the cloud provider (for instance [AWS ELB](https://aws.amazon.com/elasticloadbalancing/)) will be launched and it will serve our application to the outside world.
 
-sudo iptables -t nat -A PREROUTING -i enp0s8 -p tcp --dport 80 -m state --state NEW -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.168.33.21:32038
-sudo iptables -t nat -A PREROUTING -i enp0s8 -p tcp --dport 80 -j DNAT --to-destination 192.168.33.22:32038
+We will try to replicate that behaviour. A new virtual machine will be launched (check [Vagrantfile](https://github.com/mendrugory/kubernetes-vagrant/blob/master/lb/Vagrantfile)) as load balancer. Instead of installing any software product with the capacity of balancing requests between our replicas, we will use [Netfilter](https://en.wikipedia.org/wiki/Netfilter) through the tool `iptables`. The configuration will be applied by the Ansible role `load-balancer`.
 
+The virtual machine will receive a public IP which will be accessible by other computers in the same network.
 
-sudo iptables -t nat -A PREROUTING -i enp0s9 -p tcp --dport 80 -m state --state NEW -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.168.33.21:32038
-sudo iptables -t nat -A PREROUTING -i enp0s9 -p tcp --dport 80 -j DNAT --to-destination 192.168.33.22:32038
+## Start up the Load Balancer
 
-
-sudo iptables -t nat -A POSTROUTING -j MASQUERADE
-
-
-borrar -> sudo iptables -t nat -D PREROUTING 1
-
+### Start up the virtual machine
 
 ```
-$ ansible-playbook lb.yml --extra-vars "server1=192.168.33.21 server2=192.168.33.22 app_port=32038 interface=enp0s9"
+$ vagrant up
+```
+
+### Set up the load balancer for the Nginx
+
+It is necessary to pass the IPs of the nodes, the port of the app and the network interface (by default will be `enp0s9`).
+
+```
+$ ansible-playbook lb.yml --extra-vars "server1=192.168.33.21 server2=192.168.33.22 app_port=32741 interface=enp0s9"
+```
+
+> Check the given Public IP.
+
+### Visit the application through the Load Balancer
+
+```
+$ curl 192.168.1.143
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
 ```
