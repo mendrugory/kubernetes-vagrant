@@ -29,6 +29,13 @@ Several Roles have been developed to help us:
 * kubernetes-master: It will initialize Kubernetes master, install a CNI plugin (Flannel in this case), or produce the code for the nodes to join the cluster.
 * kubernetes-worker: It will help the nodes to join the cluster.
 
+### Installation
+
+```bash
+$ ansible-playbook k8s.yml
+```
+
+
 ## Pointing to the Kubernetes cluster
 
 The Ansible Playbook finishes with a task which will create a file called `mykubeconfig` which should be used to work with the just created kubernetes cluster through the tool `kubectl`
