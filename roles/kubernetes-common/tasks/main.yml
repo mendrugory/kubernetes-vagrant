@@ -3,12 +3,13 @@
 
 
 - name: Installing prerequisites
-  apt: name={{item}} update_cache=yes
-  with_items:
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - software-properties-common
+  apt:
+    update_cache: yes
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
 
 - name: Ensuring curl is present
   package: name=curl state=present
@@ -22,15 +23,16 @@
   apt_repository: repo='deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main'
 
 - name: Installing Kubernetes
-  apt: name={{item}} update_cache=yes
-  with_items:
-    - kubectl={{ version }}
-    - kubeadm={{ version }}
-    - kubelet={{ version }}
+  apt:
+    update_cache: yes
+    pkg:
+      - kubectl={{ version }}
+      - kubeadm={{ version }}
+      - kubelet={{ version }}
 
 - name: Disable swap memory
-  shell: "swapoff -a"  
+  shell: "swapoff -a"
 
 - name: Copying kubeadm.conf
   template: src=10-kubeadm.conf.j2 dest=/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-  notify: restart_kubelet    
+  notify: restart_kubelet

@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "ingress" do |ingress|
     ingress.vm.hostname = "ingress"
-    ingress.vm.box = "ubuntu/xenial64"
+    ingress.vm.box = "ubuntu/focal64"
     ingress.vm.network "private_network", ip: "192.168.33.41" 
     ingress.vm.network "public_network"
   end

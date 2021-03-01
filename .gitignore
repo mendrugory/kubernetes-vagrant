@@ -2,3 +2,4 @@
 *.retry
 *.log
 mykubeconfig
+.envrc
