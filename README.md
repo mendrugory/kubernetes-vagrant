@@ -69,19 +69,25 @@ kubectl get nodes -o wide
 ### Deploy 2 replicas of Nginx and expose them.
 
 ```
-kubectl run nginx --port=80 --image=nginx --replicas=2 --kubeconfig mykubeconfig
+kubectl create deployment mynginx --image=nginx:1.15-alpine
 ```
 ```
-kubectl expose deployment nginx --port=80 --type=NodePort --kubeconfig mykubeconfig
+kubectl scale deployment mynginx --replicas=3
+```
+```
+kubectl expose deployment mynginx --port=80 --type=NodePort --name=mynginx-service
 ```
 
 
 ### Deploy 2 replicas of Apache Web server and expose them.
 ```
-kubectl run httpd --port=80 --image=httpd --replicas=2 --kubeconfig mykubeconfig
+kubectl create deployment myhttpd --port=80 --image=httpd
 ```
 ```
-kubectl expose deployment httpd --port=80 --type=NodePort --kubeconfig mykubeconfig
+kubectl scale deployment myhttpd --replicas=3
+```
+```
+kubectl expose deployment myhttpd --port=80 --type=NodePort --name=myhttpd-service
 ```
 
 
@@ -90,21 +96,21 @@ kubectl expose deployment httpd --port=80 --type=NodePort --kubeconfig mykubecon
 Check out the assigned Ports.
 
 ```
-kubectl get svc --kubeconfig mykubeconfig
+kubectl get svc
 ```
 
 ```
-NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
-httpd        NodePort    10.103.208.92   <none>        80:30275/TCP   18s
-nginx        NodePort    10.105.235.99   <none>        80:32741/TCP   70s
-kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP        8m
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP        3h34m
+myhttpd-service   NodePort    10.102.106.131   <none>        80:32443/TCP   3m30s
+mynginx-service   NodePort    10.103.115.154   <none>        80:31603/TCP   10m
 ```
 
 
 Make requests to any of the nodes
 
 ```
-curl 192.168.33.21:32741
+curl 192.168.33.21:31603
 ```
 
 ```
@@ -136,7 +142,7 @@ Commercial support is available at
 ```
 
 ```
-curl 192.168.33.21:30275
+curl 192.168.33.21:32443
 ```
 ```
 <html><body><h1>It works!</h1></body></html>
@@ -147,5 +153,5 @@ curl 192.168.33.21:30275
 
 The servers only have private IPs, therefore it would not be possible to access to the applications from other computers. Let's solve it !!
 
-* [Load Balancer](https://github.com/mendrugory/kubernetes-vagrant/tree/master/lb)
-* [Ingress](https://github.com/mendrugory/kubernetes-vagrant/tree/master/ingress)
+* [Load Balancer](lb)
+* [Ingress](ingress)
