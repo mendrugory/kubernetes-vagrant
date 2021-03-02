@@ -15,7 +15,7 @@ The virtual machine will receive a public IP which will be accessible by other c
 ### Start up the virtual machine
 
 ```
-$ vagrant up
+vagrant up
 ```
 
 ### Set up the Ingress
@@ -23,7 +23,7 @@ $ vagrant up
 It is necessary to pass the IPs of the nodes and the ports of the apps.
 
 ```
-$ ansible-playbook ingress.yml --extra-vars "server1=192.168.33.21 server2=192.168.33.22 app1_port=32741 app2_port=30275"
+ansible-playbook ingress.yml --extra-vars "server1=192.168.33.21 server2=192.168.33.22 app1_port=31603 app2_port=32443"
 ```
 
 
@@ -32,7 +32,10 @@ $ ansible-playbook ingress.yml --extra-vars "server1=192.168.33.21 server2=192.1
 ### Visit the applications through the Ingress
 
 ```
-$ curl 192.168.1.144/app1/
+curl 192.168.1.144/app1/
+```
+
+```
 <!DOCTYPE html>
 <html>
 <head>
@@ -61,6 +64,9 @@ Commercial support is available at
 ```
 
 ```
-$ curl 192.168.1.144/app2/
+curl 192.168.1.144/app2/
+```
+
+```
 <html><body><h1>It works!</h1></body></html>
 ```
