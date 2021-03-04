@@ -11,4 +11,4 @@
     shell: "hostname -I | awk '{print $3}'"
     register: ips
   - debug:
-      msg: "Public IP is: {{ ips.stdout }}" 
+      msg: "Public IP is: {{ ips.stdout }}"

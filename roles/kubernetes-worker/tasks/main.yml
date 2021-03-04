@@ -12,4 +12,3 @@
 
 - name: Join Kubernetes cluster
   shell: "{{ hostvars['k8s_middle_server']['kube_join_command'] }}"
-      
