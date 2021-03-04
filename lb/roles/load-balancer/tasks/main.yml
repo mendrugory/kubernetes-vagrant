@@ -9,7 +9,7 @@
 
 
 - name: IPTables rule server2
-  iptables: 
+  iptables:
     table: nat
     chain: PREROUTING
     in_interface: "{{ interface }}"

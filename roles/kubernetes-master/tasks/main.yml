@@ -3,7 +3,7 @@
 
 
 - name: Initializing K8s masters
-  command: "kubeadm init --pod-network-cidr={{ cidr }} --apiserver-advertise-address={{ ip }}" 
+  command: "kubeadm init --pod-network-cidr={{ cidr }} --apiserver-advertise-address={{ ip }}"
 
 - name: Clean .kube
   file:
@@ -23,7 +23,7 @@
   command: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml --kubeconfig /home/{{user}}/.kube/config"
 
 
-- name: Kubernetes Join command  
+- name: Kubernetes Join command
   shell: "kubeadm token create --print-join-command"
   register: kube_join_command
 
@@ -31,16 +31,16 @@
   debug:
     var: kube_join_command.stdout_lines
 
-- name: Kubernetes Config  
+- name: Kubernetes Config
   shell: "cat /etc/kubernetes/admin.conf"
   register: kube_config
 
 - name: Print Kubernetes Config
   debug:
-    var: kube_config.stdout_lines 
+    var: kube_config.stdout_lines
 
 - name: "Add K8S information"
   add_host:
-    name:   "{{ k8s_middle_server }}"
-    kube_join_command:  "{{ kube_join_command.stdout }}"
-    kube_config:   "{{ kube_config.stdout }}"    
+    name: "{{ k8s_middle_server }}"
+    kube_join_command: "{{ kube_join_command.stdout }}"
+    kube_config: "{{ kube_config.stdout }}"

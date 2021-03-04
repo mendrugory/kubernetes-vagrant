@@ -7,12 +7,12 @@ This a project which could be used it as playground to learn and experiment with
 
 ## Virtual Infrastructure
 
-[Vagrant](https://www.vagrantup.com/) with [Virtualbox](https://www.virtualbox.org/) as provider will be used to create the infrastructure. One server will the Kubernetes master and two servers as Kubernetes workers. The virtual machines will run Ubuntu 16.04 (xenial).
+[Vagrant](https://www.vagrantup.com/) with [Virtualbox](https://www.virtualbox.org/) as provider will be used to create the infrastructure. One server will the Kubernetes master and two servers as Kubernetes workers. The virtual machines will run Ubuntu 20.04 (focal).
 
 Start up the infrastructure:
 
 ```
-$ vagrant up
+vagrant up
 ```
 
 If any change is desired, you only have to modify [Vagrantfile](https://github.com/mendrugory/kubernetes-vagrant/blob/master/Vagrantfile).
@@ -32,7 +32,7 @@ Several Roles have been developed to help us:
 ### Installation
 
 ```bash
-$ ansible-playbook k8s.yml
+ansible-playbook k8s.yml
 ```
 
 
@@ -40,15 +40,28 @@ $ ansible-playbook k8s.yml
 
 The Ansible Playbook finishes with a task which will create a file called `mykubeconfig` which should be used to work with the just created kubernetes cluster through the tool `kubectl`
 
-Example: 
+Example:
 
 ```
-$ kubectl get nodes -o wide --kubeconfig mykubeconfig
-NAME   STATUS   ROLES    AGE     VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
-k8s1   Ready    master   1m      v1.13.5   192.168.33.11   <none>        Ubuntu 16.04.6 LTS   4.4.0-151-generic   docker://18.6.1
-k8s2   Ready    <none>   57s     v1.13.5   192.168.33.21   <none>        Ubuntu 16.04.6 LTS   4.4.0-151-generic   docker://18.6.1
-k8s3   Ready    <none>   57s     v1.13.5   192.168.33.22   <none>        Ubuntu 16.04.6 LTS   4.4.0-151-generic   docker://18.6.1
-``` 
+kubectl get nodes -o wide --kubeconfig mykubeconfig
+```
+
+```
+NAME   STATUS   ROLES    AGE     VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
+k8s1   Ready    master   2m36s   v1.18.0   192.168.33.11   <none>        Ubuntu 20.04.2 LTS   5.4.0-66-generic   docker://20.10.4
+k8s2   Ready    <none>   2m6s    v1.18.0   192.168.33.21   <none>        Ubuntu 20.04.2 LTS   5.4.0-66-generic   docker://20.10.4
+k8s3   Ready    <none>   2m6s    v1.18.0   192.168.33.22   <none>        Ubuntu 20.04.2 LTS   5.4.0-66-generic   docker://20.10.4
+```
+
+You can also set the `KUBECONFIG` environment variable to path of `mykubeconfig` like this:
+```
+export KUBECONFIG=./mykubeconfig
+```
+
+And then run:
+```
+kubectl get nodes -o wide
+```
 
 
 ## Deploying Applications
@@ -56,15 +69,25 @@ k8s3   Ready    <none>   57s     v1.13.5   192.168.33.22   <none>        Ubuntu 
 ### Deploy 2 replicas of Nginx and expose them.
 
 ```
-$ kubectl run nginx --port=80 --image=nginx --replicas=2 --kubeconfig mykubeconfig 
-$ kubectl expose deployment nginx --port=80 --type=NodePort --kubeconfig mykubeconfig 
+kubectl create deployment mynginx --image=nginx:1.15-alpine
+```
+```
+kubectl scale deployment mynginx --replicas=3
+```
+```
+kubectl expose deployment mynginx --port=80 --type=NodePort --name=mynginx-service
 ```
 
 
 ### Deploy 2 replicas of Apache Web server and expose them.
 ```
-$ kubectl run httpd --port=80 --image=httpd --replicas=2 --kubeconfig mykubeconfig 
-$ kubectl expose deployment httpd --port=80 --type=NodePort --kubeconfig mykubeconfig 
+kubectl create deployment myhttpd --port=80 --image=httpd
+```
+```
+kubectl scale deployment myhttpd --replicas=3
+```
+```
+kubectl expose deployment myhttpd --port=80 --type=NodePort --name=myhttpd-service
 ```
 
 
@@ -73,18 +96,24 @@ $ kubectl expose deployment httpd --port=80 --type=NodePort --kubeconfig mykubec
 Check out the assigned Ports.
 
 ```
-kubectl get svc --kubeconfig mykubeconfig 
-NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
-httpd        NodePort    10.103.208.92   <none>        80:30275/TCP   18s
-nginx        NodePort    10.105.235.99   <none>        80:32741/TCP   70s
-kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP        8m
+kubectl get svc
+```
+
+```
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP        3h34m
+myhttpd-service   NodePort    10.102.106.131   <none>        80:32443/TCP   3m30s
+mynginx-service   NodePort    10.103.115.154   <none>        80:31603/TCP   10m
 ```
 
 
 Make requests to any of the nodes
 
 ```
-$ curl 192.168.33.21:32741
+curl 192.168.33.21:31603
+```
+
+```
 <!DOCTYPE html>
 <html>
 <head>
@@ -113,7 +142,9 @@ Commercial support is available at
 ```
 
 ```
-$ curl 192.168.33.21:30275
+curl 192.168.33.21:32443
+```
+```
 <html><body><h1>It works!</h1></body></html>
 ```
 
@@ -122,5 +153,5 @@ $ curl 192.168.33.21:30275
 
 The servers only have private IPs, therefore it would not be possible to access to the applications from other computers. Let's solve it !!
 
-* [Load Balancer](https://github.com/mendrugory/kubernetes-vagrant/tree/master/lb)
-* [Ingress](https://github.com/mendrugory/kubernetes-vagrant/tree/master/ingress)
+* [Load Balancer](lb)
+* [Ingress](ingress)

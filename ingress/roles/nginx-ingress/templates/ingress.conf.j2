@@ -12,7 +12,7 @@ server {
     listen 80;
 
     location /app1 {
-        proxy_pass http://app1;      
+        proxy_pass http://app1;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -22,12 +22,12 @@ server {
     }
 
     location /app2 {
-        proxy_pass http://app2;      
+        proxy_pass http://app2;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_cache_bypass $http_upgrade;
         rewrite ^/app2(.*)$ $1 break;
-    }    
-}    
+    }
+}
