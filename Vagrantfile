@@ -4,22 +4,24 @@
 
 Vagrant.configure("2") do |config|
 
-  config.vm.define "k8s1" do |k8s1|
-    k8s1.vm.hostname = "k8s1"
-    k8s1.vm.box = "ubuntu/focal64"
-    k8s1.vm.network "private_network", ip: "192.168.33.11"
+  config.vm.provider :virtualbox do |v|
+    v.linked_clone = true
   end
 
-  config.vm.define "k8s2" do |k8s2|
-    k8s2.vm.hostname = "k8s2"
-    k8s2.vm.box = "ubuntu/focal64"
-    k8s2.vm.network "private_network", ip: "192.168.33.21"
+  (1..1).each do |i|
+    config.vm.define ("m%02d" % i) do |node|
+      node.vm.hostname = "m%02d" % i
+      node.vm.box = "ubuntu/focal64"
+      node.vm.network "private_network", ip: "192.168.33.#{10+i}"
+    end
   end
 
-  config.vm.define "k8s3" do |k8s3|
-    k8s3.vm.hostname = "k8s3"
-    k8s3.vm.box = "ubuntu/focal64"
-    k8s3.vm.network "private_network", ip: "192.168.33.22"
+  (1..2).each do |i|
+    config.vm.define ("w%02d" % i) do |node|
+      node.vm.hostname = "w%02d" % i
+      node.vm.box = "ubuntu/focal64"
+      node.vm.network "private_network", ip: "192.168.33.#{20+i}"
+    end
   end
 
 end

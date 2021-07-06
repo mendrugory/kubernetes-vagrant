@@ -6,7 +6,7 @@
   become: yes
   roles:
     - role: docker
-      version: 5:20.10.4~3-0~ubuntu-focal
+      version: 5:20.10.7~3-0~ubuntu-focal
     - role: kubernetes-common
       version: 1.18.0-00
       ip: "{{ ansible_host }}"
@@ -19,7 +19,7 @@
     version: 1.18.0-00
     cidr: 10.244.0.0/16
     ip: "{{ hostvars['master1']['ansible_host'] }}"
-    user: "{{ hostvars['master1']['ansible_user'] }}"
+    user: "{{ hostvars['master1']['ansible_env']['SUDO_USER'] }}"
     k8s_middle_server: k8s_middle_server
 
 - name: Workers
@@ -33,7 +33,9 @@
 
 - name: Local
   hosts: 127.0.0.1
-  connection: local
   tasks:
   - name: Getting Kubernetes configuration
-    local_action: copy content={{ hostvars['k8s_middle_server']['kube_config'] }} dest=mykubeconfig
+    copy:
+      content: "{{ hostvars['k8s_middle_server']['kube_config'] }}"
+      dest: mykubeconfig
+    delegate_to: localhost

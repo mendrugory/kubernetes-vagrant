@@ -1,14 +1,11 @@
 ---
-# tasks file for docker
-
 
 - name: IPTables Rule
   sysctl:
     name: net.bridge.bridge-nf-call-iptables
-    value: 1
+    value: '1'
     state: present
     reload: yes
-
 
 - name: Join Kubernetes cluster
   shell: "{{ hostvars['k8s_middle_server']['kube_join_command'] }}"

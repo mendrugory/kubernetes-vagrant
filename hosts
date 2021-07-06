@@ -1,6 +1,6 @@
 [masters]
-master1 ansible_host=192.168.33.11 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/k8s1/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3
+master1 ansible_host=192.168.33.11 ansible_ssh_private_key_file=.vagrant/machines/m01/virtualbox/private_key
 
 [workers]
-worker1 ansible_host=192.168.33.21 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/k8s2/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3
-worker2 ansible_host=192.168.33.22 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/k8s3/virtualbox/private_key ansible_python_interpreter=/usr/bin/python3
+worker1 ansible_host=192.168.33.21 ansible_ssh_private_key_file=.vagrant/machines/w01/virtualbox/private_key
+worker2 ansible_host=192.168.33.22 ansible_ssh_private_key_file=.vagrant/machines/w02/virtualbox/private_key

@@ -1,30 +1,35 @@
 ---
-# tasks file for docker
-
 
 - name: Initializing K8s masters
-  command: "kubeadm init --pod-network-cidr={{ cidr }} --apiserver-advertise-address={{ ip }}"
+  command: >
+    kubeadm init
+    --pod-network-cidr={{ cidr }}
+    --apiserver-advertise-address={{ ip }}
+    --ignore-preflight-errors=Port-6443,Port-10259,Port-10257,Port-10250,Port-2379,Port-2380,FileAvailable--etc-kubernetes-manifests-kube-apiserver.yaml,FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml,FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml,FileAvailable--etc-kubernetes-manifests-etcd.yaml,DirAvailable--var-lib-etcd
 
 - name: Clean .kube
   file:
     state: absent
-    path: /home/{{user}}/.kube
+    path: /home/{{ user }}/.kube
 
 - name: Create a .kube if it does not exist
   file:
-    path: /home/{{user}}/.kube
+    path: /home/{{ user }}/.kube
     state: directory
     mode: '0755'
 
 - name: Create kubeconfig
-  shell: "cp /etc/kubernetes/admin.conf /home/{{user}}/.kube/config && chown {{user}}:{{user}} /home/{{user}}/.kube/config"
+  shell: "cp /etc/kubernetes/admin.conf /home/{{ user }}/.kube/config && chown {{ user }}:{{ user }} /home/{{ user }}/.kube/config"
 
 - name: Network Plugin
-  command: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml --kubeconfig /home/{{user}}/.kube/config"
-
+  become: false
+  command: >
+    kubectl apply
+    -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+    --kubeconfig /home/{{ user }}/.kube/config
 
 - name: Kubernetes Join command
-  shell: "kubeadm token create --print-join-command"
+  command: "kubeadm token create --print-join-command"
   register: kube_join_command
 
 - name: Print Kubernetes Join command

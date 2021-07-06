@@ -19,7 +19,7 @@
     jump: DNAT
 
 - name: IPTables rule
-  iptables: 
+  iptables:
     table: nat
     chain: POSTROUTING
     jump: MASQUERADE

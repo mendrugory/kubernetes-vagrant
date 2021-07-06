@@ -48,9 +48,9 @@ kubectl get nodes -o wide --kubeconfig mykubeconfig
 
 ```
 NAME   STATUS   ROLES    AGE     VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
-k8s1   Ready    master   2m36s   v1.18.0   192.168.33.11   <none>        Ubuntu 20.04.2 LTS   5.4.0-66-generic   docker://20.10.4
-k8s2   Ready    <none>   2m6s    v1.18.0   192.168.33.21   <none>        Ubuntu 20.04.2 LTS   5.4.0-66-generic   docker://20.10.4
-k8s3   Ready    <none>   2m6s    v1.18.0   192.168.33.22   <none>        Ubuntu 20.04.2 LTS   5.4.0-66-generic   docker://20.10.4
+m01    Ready    master   2m36s   v1.18.0   192.168.33.11   <none>        Ubuntu 20.04.2 LTS   5.4.0-73-generic   docker://20.10.7
+w01    Ready    <none>   2m6s    v1.18.0   192.168.33.21   <none>        Ubuntu 20.04.2 LTS   5.4.0-73-generic   docker://20.10.7
+w02    Ready    <none>   2m6s    v1.18.0   192.168.33.22   <none>        Ubuntu 20.04.2 LTS   5.4.0-73-generic   docker://20.10.7
 ```
 
 You can also set the `KUBECONFIG` environment variable to path of `mykubeconfig` like this:
