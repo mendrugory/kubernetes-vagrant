@@ -32,10 +32,6 @@
   command: "kubeadm token create --print-join-command"
   register: kube_join_command
 
-- name: Print Kubernetes Join command
-  debug:
-    var: kube_join_command.stdout_lines
-
 - name: Kubernetes Config
   shell: "cat /etc/kubernetes/admin.conf"
   register: kube_config

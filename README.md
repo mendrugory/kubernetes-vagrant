@@ -5,24 +5,24 @@ This a project which could be used it as playground to learn and experiment with
 > The code is just for fun and learning, do not use for production.
 > Minimum 8 GB of RAM but 16 GB of RAM are recommended.
 
+## Prerequisites
+- Vagrant
+- Virtualbox
+- Ansible
+
 ## Virtual Infrastructure
 
 [Vagrant](https://www.vagrantup.com/) with [Virtualbox](https://www.virtualbox.org/) as provider will be used to create the infrastructure. One server will the Kubernetes master and two servers as Kubernetes workers. The virtual machines will run Ubuntu 20.04 (focal).
 
 Start up the infrastructure:
 
-```
+```bash
 vagrant up
 ```
 
-If any change is desired, you only have to modify [Vagrantfile](https://github.com/mendrugory/kubernetes-vagrant/blob/master/Vagrantfile).
-
-
 ## Kubernetes Installation
 
-[Ansible](https://www.ansible.com/) is the chosen tool to install all the necessary software in the servers to have Kubernetes ready.
-
-Several Roles have been developed to help us:
+Ansible roles to setup the cluster:
 
 * docker: It will install docker in all the servers
 * kubernetes-common: Common parts for Kubernetes installation which have to be installed in all the servers (masters and workers).
@@ -30,20 +30,18 @@ Several Roles have been developed to help us:
 * kubernetes-worker: It will help the nodes to join the cluster.
 
 ### Installation
-
 ```bash
 ansible-playbook k8s.yml
 ```
 
+#### List the nodes
 
-## Pointing to the Kubernetes cluster
-
-The Ansible Playbook finishes with a task which will create a file called `mykubeconfig` which should be used to work with the just created kubernetes cluster through the tool `kubectl`
+When Ansible Playbook finishes, a file called `mykubeconfig` is created. We use this file to communicate with the cluster.
 
 Example:
 
 ```
-kubectl get nodes -o wide --kubeconfig mykubeconfig
+kubectl --kubeconfig mykubeconfig get nodes -o wide
 ```
 
 ```
@@ -63,6 +61,33 @@ And then run:
 kubectl get nodes -o wide
 ```
 
+#### Optional Dashboard
+
+Deploy the [Kubernetes Dashboard](https://github.com/kubernetes/dashboard):
+
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
+```
+
+Create a service account with admin role. ([source](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)):
+
+```
+kubectl apply -f jobs/dashboard/dashboard-service-account-with-admin-role.yaml
+```
+
+Copy the token from output of following command:
+
+```
+kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
+```
+
+Make the dashboard accessible from your host (run this in a different command line session):
+
+```
+kubectl --kubeconfig mykubeconfig port-forward -n kubernetes-dashboard service/kubernetes-dashboard 8080:443
+```
+
+Navigate to https://localhost:8080/ and login with the token from above.
 
 ## Deploying Applications
 
