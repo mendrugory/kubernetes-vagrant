@@ -105,7 +105,7 @@ kubectl create deployment mynginx --port=80 --image=192.168.33.11:5000/mynginx
 kubectl scale deployment mynginx --replicas=3
 ```
 ```
-kubectl expose deployment mynginx --port=80 --type=NodePort --name=192.168.33.11:5000/mynginx
+kubectl expose deployment mynginx --port=80 --type=NodePort --name=mynginx
 ```
 
 ### Visit the Applications
