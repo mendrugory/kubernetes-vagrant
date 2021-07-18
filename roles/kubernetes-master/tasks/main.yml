@@ -36,10 +36,6 @@
   shell: "cat /etc/kubernetes/admin.conf"
   register: kube_config
 
-- name: Print Kubernetes Config
-  debug:
-    var: kube_config.stdout_lines
-
 - name: "Add K8S information"
   add_host:
     name: "{{ k8s_middle_server }}"
