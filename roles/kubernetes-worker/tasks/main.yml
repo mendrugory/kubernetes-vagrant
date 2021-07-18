@@ -7,5 +7,11 @@
     state: present
     reload: yes
 
+- name: Check that kubelet config exists
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_file_stat
+
 - name: Join Kubernetes cluster
   shell: "{{ hostvars['k8s_middle_server']['kube_join_command'] }}"
+  when: not kubelet_file_stat.stat.exists

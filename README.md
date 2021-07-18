@@ -98,12 +98,17 @@ Build the special nginx image on the master1 and push it to its docker registry:
 ansible master1 -b -m shell -a 'cd /vagrant/apps/nginx && docker build . -t localhost:5000/mynginx && docker push localhost:5000/mynginx'
 ```
 
+Create a deployment:
 ```
 kubectl create deployment mynginx --port=80 --image=192.168.33.11:5000/mynginx
 ```
+
+Set number of required replicas:
 ```
 kubectl scale deployment mynginx --replicas=3
 ```
+
+Expose the service to a dynamically assigned port:
 ```
 kubectl expose deployment mynginx --port=80 --type=NodePort --name=mynginx
 ```

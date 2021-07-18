@@ -1,16 +1,16 @@
 ---
 
+- name: Check that kubelet config exists
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_file_stat
+
 - name: Initializing K8s masters
   command: >
     kubeadm init
     --pod-network-cidr={{ cidr }}
     --apiserver-advertise-address={{ ip }}
-    --ignore-preflight-errors=Port-6443,Port-10259,Port-10257,Port-10250,Port-2379,Port-2380,FileAvailable--etc-kubernetes-manifests-kube-apiserver.yaml,FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml,FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml,FileAvailable--etc-kubernetes-manifests-etcd.yaml,DirAvailable--var-lib-etcd
-
-- name: Clean .kube
-  file:
-    state: absent
-    path: /home/{{ user }}/.kube
+  when: not kubelet_file_stat.stat.exists
 
 - name: Create a .kube if it does not exist
   file:
@@ -18,8 +18,13 @@
     state: directory
     mode: '0755'
 
-- name: Create kubeconfig
-  shell: "cp /etc/kubernetes/admin.conf /home/{{ user }}/.kube/config && chown {{ user }}:{{ user }} /home/{{ user }}/.kube/config"
+- name: Copy kube admin config to user specific location
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest:  /home/{{ user }}/.kube/config
+    remote_src: yes
+    group: "{{ user }}"
+    owner: "{{ user }}"
 
 - name: Network Plugin
   become: false
@@ -28,16 +33,17 @@
     -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
     --kubeconfig /home/{{ user }}/.kube/config
 
-- name: Kubernetes Join command
+- name: Register Kubernetes Join command
   command: "kubeadm token create --print-join-command"
   register: kube_join_command
 
-- name: Kubernetes Config
-  shell: "cat /etc/kubernetes/admin.conf"
+- name: Register Kubernetes Config
+  slurp:
+    src: /etc/kubernetes/admin.conf
   register: kube_config
 
 - name: "Add K8S information"
   add_host:
     name: "{{ k8s_middle_server }}"
     kube_join_command: "{{ kube_join_command.stdout }}"
-    kube_config: "{{ kube_config.stdout }}"
+    kube_config: "{{ kube_config.content | b64decode }}"
