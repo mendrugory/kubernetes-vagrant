@@ -1,0 +1,12 @@
+---
+
+- name: Check if docker registry container is already running
+  shell: docker ps | grep registry
+  register: docker_ps_registry
+  ignore_errors: true
+  changed_when: false
+
+- name: install docker registry
+  command: docker run -d -p {{ docker_registry_port }}:5000 --restart=always --name registry registry:2
+  when: docker_ps_registry.rc != 0
+  run_once: true

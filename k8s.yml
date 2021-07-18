@@ -39,3 +39,9 @@
       content: "{{ hostvars['k8s_middle_server']['kube_config'] }}"
       dest: mykubeconfig
     delegate_to: localhost
+
+- name: Docker Registry
+  hosts: registry
+  become: yes
+  roles:
+  - role: docker-registry

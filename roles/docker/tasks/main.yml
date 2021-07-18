@@ -18,3 +18,10 @@
 
 - name: Installing Docker
   apt: name=docker-ce={{ version }} update_cache=yes force=yes
+
+- name: Setup insecure docker registry
+  template:
+    src: docker-daemon.json.j2
+    dest: /etc/docker/daemon.json
+  notify:
+    - restart docker service
