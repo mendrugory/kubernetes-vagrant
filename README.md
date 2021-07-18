@@ -125,7 +125,8 @@ mynginx-service   NodePort    10.103.115.154   <none>        80:31603/TCP   10m
 You can now access _any_ of the worker nodes in the kubernetes cluster on the `assigned` port (31603 in our case) to access the application.
 
 ```bash
-for i in 21 22; do echo -n "192.168.33.$i: "; curl http://192.168.33.$i:31603; done;
+ASSIGNED_PORT=31603
+for i in 21 22; do echo -n "192.168.33.$i: "; curl http://192.168.33.$i:$ASSIGNED_PORT; done;
 ```
 
 You should see something like this:
