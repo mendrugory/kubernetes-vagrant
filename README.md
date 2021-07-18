@@ -91,30 +91,22 @@ Navigate to https://localhost:8080/ and login with the token from above.
 
 ## Deploying Applications
 
-### Deploy 2 replicas of Nginx and expose them.
+### Deploy 2 replicas of Nginx and expose them
+
+Build the special nginx image on the master1 and push it to its docker registry:
+```bash
+ansible master1 -b -m shell -a 'cd /vagrant/apps/nginx && docker build . -t localhost:5000/mynginx && docker push localhost:5000/mynginx'
+```
 
 ```
-kubectl create deployment mynginx --image=nginx:1.15-alpine
+kubectl create deployment mynginx --port=80 --image=192.168.33.11:5000/mynginx
 ```
 ```
 kubectl scale deployment mynginx --replicas=3
 ```
 ```
-kubectl expose deployment mynginx --port=80 --type=NodePort --name=mynginx-service
+kubectl expose deployment mynginx --port=80 --type=NodePort --name=192.168.33.11:5000/mynginx
 ```
-
-
-### Deploy 2 replicas of Apache Web server and expose them.
-```
-kubectl create deployment myhttpd --port=80 --image=httpd
-```
-```
-kubectl scale deployment myhttpd --replicas=3
-```
-```
-kubectl expose deployment myhttpd --port=80 --type=NodePort --name=myhttpd-service
-```
-
 
 ### Visit the Applications
 
@@ -127,50 +119,19 @@ kubectl get svc
 ```
 NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
 kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP        3h34m
-myhttpd-service   NodePort    10.102.106.131   <none>        80:32443/TCP   3m30s
 mynginx-service   NodePort    10.103.115.154   <none>        80:31603/TCP   10m
 ```
 
+You can now access _any_ of the worker nodes in the kubernetes cluster on the `assigned` port (31603 in our case) to access the application.
 
-Make requests to any of the nodes
-
-```
-curl 192.168.33.21:31603
-```
-
-```
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-<style>
-    body {
-        width: 35em;
-        margin: 0 auto;
-        font-family: Tahoma, Verdana, Arial, sans-serif;
-    }
-</style>
-</head>
-<body>
-<h1>Welcome to nginx!</h1>
-<p>If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.</p>
-
-<p>For online documentation and support please refer to
-<a href="http://nginx.org/">nginx.org</a>.<br/>
-Commercial support is available at
-<a href="http://nginx.com/">nginx.com</a>.</p>
-
-<p><em>Thank you for using nginx.</em></p>
-</body>
-</html>
+```bash
+for i in 21 22; do echo -n "192.168.33.$i: "; curl http://192.168.33.$i:31603; done;
 ```
 
+You should see something like this:
 ```
-curl 192.168.33.21:32443
-```
-```
-<html><body><h1>It works!</h1></body></html>
+192.168.33.21: Sunday, 27-Jun-2021 13:24:23 UTC: mynginx-76b9d5cb7b-jfrvk
+192.168.33.22: Sunday, 27-Jun-2021 13:24:23 UTC: mynginx-76b9d5cb7b-8j8lg
 ```
 
 
