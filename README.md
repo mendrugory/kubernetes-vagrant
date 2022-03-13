@@ -8,7 +8,7 @@ This a project which could be used it as playground to learn and experiment with
 ## Prerequisites
 - Vagrant
 - Virtualbox
-- Ansible
+- Python3.8 or later (to run Ansible)
 
 ## Virtual Infrastructure
 
@@ -16,8 +16,24 @@ This a project which could be used it as playground to learn and experiment with
 
 Start up the infrastructure:
 
-```bash
+```shell
 vagrant up
+```
+
+## Install Ansible
+Install virtual python environment:
+```shell
+python3.8 -m venv .venv
+```
+
+Activate the virtual environment:
+```shell
+source .venv/bin/activate
+```
+
+Install Ansible:
+```shell
+pip install ansible
 ```
 
 ## Kubernetes Installation
@@ -30,7 +46,7 @@ Ansible roles to setup the cluster:
 * kubernetes-worker: It will help the nodes to join the cluster.
 
 ### Installation
-```bash
+```shell
 ansible-playbook k8s.yml
 ```
 
@@ -40,7 +56,7 @@ When Ansible Playbook finishes, a file called `mykubeconfig` is created. We use 
 
 Example:
 
-```
+```shell
 kubectl --kubeconfig mykubeconfig get nodes -o wide
 ```
 
@@ -52,12 +68,12 @@ w02    Ready    <none>   2m6s    v1.18.0   192.168.33.22   <none>        Ubuntu 
 ```
 
 You can also set the `KUBECONFIG` environment variable to path of `mykubeconfig` like this:
-```
+```shell
 export KUBECONFIG=./mykubeconfig
 ```
 
 And then run:
-```
+```shell
 kubectl get nodes -o wide
 ```
 
@@ -65,25 +81,25 @@ kubectl get nodes -o wide
 
 Deploy the [Kubernetes Dashboard](https://github.com/kubernetes/dashboard):
 
-```
+```shell
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
 ```
 
 Create a service account with admin role. ([source](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)):
 
-```
+```shell
 kubectl apply -f jobs/dashboard/dashboard-service-account-with-admin-role.yaml
 ```
 
 Copy the token from output of following command:
 
-```
+```shell
 kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
 ```
 
 Make the dashboard accessible from your host (run this in a different command line session):
 
-```
+```shell
 kubectl --kubeconfig mykubeconfig port-forward -n kubernetes-dashboard service/kubernetes-dashboard 8080:443
 ```
 
@@ -94,22 +110,22 @@ Navigate to https://localhost:8080/ and login with the token from above.
 ### Deploy 2 replicas of Nginx and expose them
 
 Build the special nginx image on the master1 and push it to its docker registry:
-```bash
+```shell
 ansible master1 -b -m shell -a 'cd /vagrant/apps/nginx && docker build . -t localhost:5000/mynginx && docker push localhost:5000/mynginx'
 ```
 
 Create a deployment:
-```
+```shell
 kubectl create deployment mynginx --port=80 --image=192.168.33.11:5000/mynginx
 ```
 
 Set number of required replicas:
-```
+```shell
 kubectl scale deployment mynginx --replicas=3
 ```
 
 Expose the service to a dynamically assigned port:
-```
+```shell
 kubectl expose deployment mynginx --port=80 --type=NodePort --name=mynginx
 ```
 
@@ -117,7 +133,7 @@ kubectl expose deployment mynginx --port=80 --type=NodePort --name=mynginx
 
 Check out the assigned Ports.
 
-```
+```shell
 kubectl get svc
 ```
 
@@ -129,13 +145,13 @@ mynginx-service   NodePort    10.103.115.154   <none>        80:31603/TCP   10m
 
 You can now access _any_ of the worker nodes in the kubernetes cluster on the `assigned` port (31603 in our case) to access the application.
 
-```bash
+```shell
 ASSIGNED_PORT=31603
 for i in 21 22; do echo -n "192.168.33.$i: "; curl http://192.168.33.$i:$ASSIGNED_PORT; done;
 ```
 
 You should see something like this:
-```
+```shell
 192.168.33.21: Sunday, 27-Jun-2021 13:24:23 UTC: mynginx-76b9d5cb7b-jfrvk
 192.168.33.22: Sunday, 27-Jun-2021 13:24:23 UTC: mynginx-76b9d5cb7b-8j8lg
 ```

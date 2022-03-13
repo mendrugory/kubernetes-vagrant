@@ -1,4 +1,5 @@
-.vagrant
+.vagrant/
+.venv/
 *.retry
 *.log
 mykubeconfig
